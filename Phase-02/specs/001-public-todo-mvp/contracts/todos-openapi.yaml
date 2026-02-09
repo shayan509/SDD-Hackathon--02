@@ -1,0 +1,163 @@
+openapi: 3.0.3
+info:
+  title: Public Todo API
+  description: API for managing public todo items
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://api.example.com
+    description: Production server
+paths:
+  /api/todos:
+    get:
+      summary: Get all todo items
+      description: Retrieve a list of all todo items in the public list
+      responses:
+        '200':
+          description: A list of todo items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoItem'
+    post:
+      summary: Create a new todo item
+      description: Add a new todo item to the public list
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTodoRequest'
+      responses:
+        '201':
+          description: Todo item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoItem'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/todos/{id}:
+    get:
+      summary: Get a specific todo item
+      description: Retrieve a specific todo item by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The requested todo item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoItem'
+        '404':
+          description: Todo item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      summary: Update a todo item
+      description: Toggle the completion status of a todo item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTodoRequest'
+      responses:
+        '200':
+          description: Todo item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoItem'
+        '404':
+          description: Todo item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a todo item
+      description: Remove a todo item from the public list
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Todo item deleted successfully
+        '404':
+          description: Todo item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    TodoItem:
+      type: object
+      required:
+        - id
+        - task
+        - is_done
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the todo item
+          example: 1
+        task:
+          type: string
+          description: The text content of the todo item
+          maxLength: 500
+          example: "Buy groceries"
+        is_done:
+          type: boolean
+          description: Completion status of the todo item
+          example: false
+    CreateTodoRequest:
+      type: object
+      required:
+        - task
+      properties:
+        task:
+          type: string
+          description: The text content of the todo item
+          maxLength: 500
+          example: "Buy groceries"
+    UpdateTodoRequest:
+      type: object
+      properties:
+        is_done:
+          type: boolean
+          description: New completion status of the todo item
+          example: true
+    Error:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: Error message
+          example: "Item not found"

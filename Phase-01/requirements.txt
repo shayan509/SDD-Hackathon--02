@@ -1,0 +1,5 @@
+# CLI Todo Application Requirements
+
+typer>=0.9.0
+sqlmodel>=0.0.8
+rich>=13.0.0
