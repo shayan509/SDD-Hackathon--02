@@ -28,6 +28,11 @@ from logging_config import setup_logging
 from database.engine import engine
 from sqlmodel import SQLModel
 from models.todo import TodoItem
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -57,12 +62,17 @@ setup_logging(app)
 
 # CORS (Cross-Origin Resource Sharing) configuration
 # Allows frontend applications to make requests to this API
-origins = [
-    "http://localhost:3000",      # Next.js default dev server
-    "http://127.0.0.1:3000",      # Alternative localhost
-    "http://localhost:5173",      # Vite default dev server
-    "http://127.0.0.1:5173",      # Alternative localhost
-]
+import os
+
+# Get CORS origins from environment variable or use defaults
+cors_origins_env = os.getenv("CORS_ORIGINS", "")
+if cors_origins_env:
+    origins = [origin.strip() for origin in cors_origins_env.split(",")]
+else:
+    origins = [
+        "http://localhost:3000",      # Next.js default dev server
+        "http://127.0.0.1:3000",      # Alternative localhost
+    ]
 
 # Add CORS middleware to allow cross-origin requests from specified origins
 app.add_middleware(
