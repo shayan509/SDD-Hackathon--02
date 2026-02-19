@@ -71,7 +71,8 @@ if cors_origins_env:
 else:
     origins = [
         "http://localhost:3000",      # Next.js default dev server
-        "http://127.0.0.1:3000",      # Alternative localhost
+        "http://127.0.0.1:3000",  
+        "https://sdd-hackathon-02-p1.vercel.app"    # Alternative localhost
     ]
 
 # Add CORS middleware to allow cross-origin requests from specified origins

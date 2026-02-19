@@ -1,5 +1,5 @@
 // API client functions for todo operations
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000' || "https://sdd-hackathon-02-p2-backend.onrender.com";
 
 export interface Todo {
   id: number;
