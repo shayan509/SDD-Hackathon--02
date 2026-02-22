@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import { createTodo } from '../lib/api';
 
+interface Todo {
+  id: number;
+  task: string;
+  description?: string;
+  is_done: boolean;
+  created_at?: string;
+}
+
 interface TodoInputProps {
-  onAddTodo: (todo: any) => void;
+  onAddTodo: (todo: Todo) => void;
 }
 
 const TodoInput: React.FC<TodoInputProps> = ({ onAddTodo }) => {
@@ -15,7 +23,8 @@ const TodoInput: React.FC<TodoInputProps> = ({ onAddTodo }) => {
     e.preventDefault();
     
     if (inputValue.trim() === '') {
-      alert('Task title cannot be empty');
+      const { toast } = await import('react-toastify');
+      toast.warning('Task title cannot be empty');
       return;
     }
 
@@ -28,7 +37,8 @@ const TodoInput: React.FC<TodoInputProps> = ({ onAddTodo }) => {
       setIsExpanded(false);
     } catch (error) {
       console.error('Error creating todo:', error);
-      alert('Failed to create todo');
+      const { toast } = await import('react-toastify');
+      toast.error('Failed to create todo');
     } finally {
       setIsLoading(false);
     }

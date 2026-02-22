@@ -1,59 +1,46 @@
-# Public Todo MVP
+# Secure Todo App (Phase-02)
 
-A public todo list application with a FastAPI backend connected to Neon Postgres database and a Next.js frontend. The application allows users to create, view, toggle completion status, and delete todo items in a shared public list.
+Todo application with account authentication, user-owned data isolation, and Neon-backed persistence.
 
-## Features
+## Stack
 
-- Create new todo items
-- View all todo items in a public list
-- Toggle completion status of todo items
-- Delete todo items
-- Responsive design with dark theme
+- Backend: FastAPI + SQLModel + Neon Postgres
+- Frontend: Next.js + React + Tailwind
+- Runtime: Windows 11 development
 
-## Tech Stack
+## Core Security Guarantees
 
-- Backend: FastAPI, SQLModel, Neon Postgres
-- Frontend: Next.js 14, TypeScript, Tailwind CSS
-- Database: Neon Postgres with SSL connection
+- All `/api/todos/*` endpoints require authentication.
+- Users can only read/update/delete their own todo items.
+- Passwords are stored hashed, never plaintext.
+- JWT secrets and DB credentials are environment-only.
+- Neon connection requires SSL.
 
-## Setup
+## Local Setup (PowerShell)
 
-1. Clone the repository
-2. Navigate to the backend directory and install dependencies:
-   ```bash
-   cd backend
-   pip install -r requirements.txt
-   ```
-3. Set up environment variables in a `.env` file:
-   ```
-   DATABASE_URL=postgresql://username:password@ep-xxxxxx.us-east-1.aws.neon.tech/dbname?sslmode=require
-   ```
-4. Navigate to the frontend directory and install dependencies:
-   ```bash
-   cd frontend
-   npm install
-   ```
-5. Run the backend:
-   ```bash
-   cd backend
-   uvicorn main:app --reload --port 8000
-   ```
-6. Run the frontend:
-   ```bash
-   cd frontend
-   npm run dev
-   ```
+1. Backend:
+   - `cd backend`
+   - `pip install -r requirements.txt`
+   - Copy `.env.example` to `.env` and set values (`DATABASE_URL`, `SECRET_KEY`, `ALGORITHM`).
+   - `uvicorn main:app --reload --port 8000`
+2. Frontend:
+   - `cd frontend`
+   - `npm install`
+   - Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000`
+   - `npm run dev`
 
 ## API Endpoints
 
-- `GET /api/todos` - Get all todo items
-- `POST /api/todos` - Create a new todo item
-- `PATCH /api/todos/{id}` - Update a todo item (toggle status)
-- `DELETE /api/todos/{id}` - Delete a todo item
+- `POST /api/auth/signup`
+- `POST /api/auth/login`
+- `GET /api/todos/`
+- `POST /api/todos/`
+- `PATCH /api/todos/{id}`
+- `DELETE /api/todos/{id}`
 
-## Visual Design
+## Cleanup Scope
 
-- Primary Color: #10b981 (Emerald-500)
-- Background: #09090b (Zinc-950)
-- Surface: #18181b (Zinc-900)
-- Font: System Sans-Serif
+Obsolete artifacts targeted for removal in this feature:
+
+- Legacy local DB files (`backend/test.db`, `backend/todo.db`)
+- Root `docker-compose.yml` and phase-1 boilerplate files that are not used by active backend/frontend runtime

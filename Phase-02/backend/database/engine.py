@@ -1,6 +1,7 @@
-from sqlmodel import create_engine
 import os
+
 from dotenv import load_dotenv
+from sqlmodel import create_engine
 
 load_dotenv()
 
@@ -18,9 +19,7 @@ if DATABASE_URL.startswith("postgresql://"):
 if DATABASE_URL.startswith("sqlite:///"):
     connect_args = {}
 else:
-    # For Neon pooled connections, don't use statement_timeout
-    # Use unpooled connection or remove the parameter
-    connect_args = {}
+    connect_args = {"sslmode": "require"}
 
 engine = create_engine(
     DATABASE_URL,

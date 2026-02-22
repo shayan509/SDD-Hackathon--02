@@ -1,0 +1,13 @@
+node_modules/
+.next/
+dist/
+build/
+coverage/
+.git/
+.dockerignore
+Dockerfile*
+*.log*
+.env*
+backend/.venv/
+backend/venv/
+frontend/node_modules/

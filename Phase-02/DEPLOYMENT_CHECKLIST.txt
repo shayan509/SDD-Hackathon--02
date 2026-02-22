@@ -1,0 +1,122 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                   PRODUCTION DEPLOYMENT CHECKLIST                ║
+╚══════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 🔴 RENDER (BACKEND) - Add 3 New Variables                       │
+└──────────────────────────────────────────────────────────────────┘
+
+Go to: https://dashboard.render.com → Your Service → Environment
+
+[ ] Add Variable 1:
+    Name:  SECRET_KEY
+    Value: 5b93c0f1cbc109e284d4a922fc3b5cb73b97f561150e55668690ce1db72a8f96
+
+[ ] Add Variable 2:
+    Name:  ALGORITHM
+    Value: HS256
+
+[ ] Add Variable 3:
+    Name:  JWT_EXPIRE_MINUTES
+    Value: 60
+
+[ ] Verify existing CORS_ORIGINS includes:
+    http://localhost:3000,https://sdd-hackathon-02-p1.vercel.app
+
+[ ] Click "Save Changes"
+
+[ ] Wait for auto-deploy to complete (~2-5 minutes)
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 🟢 VERCEL (FRONTEND) - Verify Existing Variable                 │
+└──────────────────────────────────────────────────────────────────┘
+
+Go to: https://vercel.com/dashboard → Your Project → Settings → Environment Variables
+
+[ ] Verify NEXT_PUBLIC_API_BASE_URL exists:
+    Value: https://sdd-hackathon-02-p2-backend.onrender.com
+    
+[ ] If correct: ✅ Done! No changes needed.
+    If wrong: Update and redeploy
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 🧪 TESTING - Verify Everything Works                            │
+└──────────────────────────────────────────────────────────────────┘
+
+[ ] Backend API is live:
+    Visit: https://sdd-hackathon-02-p2-backend.onrender.com/docs
+    Should see: FastAPI documentation with auth endpoints
+
+[ ] Frontend is live:
+    Visit: https://sdd-hackathon-02-p1.vercel.app
+    Should see: Login page
+
+[ ] Create test account:
+    Email: test@example.com
+    Username: testuser
+    Password: password123
+    Should see: Success toast
+
+[ ] Login with test account:
+    Email: test@example.com
+    Password: password123
+    Should see: Welcome toast + dashboard
+
+[ ] Create a todo:
+    Should see: Success toast
+
+[ ] Complete a todo:
+    Should see: Success toast
+
+[ ] Delete a todo:
+    Should see: Success toast
+
+[ ] Check browser console (F12):
+    Should see: No CORS errors
+
+[ ] Logout:
+    Should see: Logout toast + redirect to login
+
+┌──────────────────────────────────────────────────────────────────┐
+│ ✅ SUCCESS CRITERIA                                              │
+└──────────────────────────────────────────────────────────────────┘
+
+Your deployment is successful when ALL of these are true:
+
+✓ Backend responds at /docs endpoint
+✓ Frontend loads without errors
+✓ Can create new account with email
+✓ Can login with email and password
+✓ Can create/edit/delete todos
+✓ Toast notifications appear
+✓ No CORS errors in browser console
+✓ Logout works correctly
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 📋 QUICK REFERENCE                                               │
+└──────────────────────────────────────────────────────────────────┘
+
+Production URLs:
+  Frontend: https://sdd-hackathon-02-p1.vercel.app
+  Backend:  https://sdd-hackathon-02-p2-backend.onrender.com
+  API Docs: https://sdd-hackathon-02-p2-backend.onrender.com/docs
+
+New Backend Variables (3):
+  SECRET_KEY=5b93c0f1cbc109e284d4a922fc3b5cb73b97f561150e55668690ce1db72a8f96
+  ALGORITHM=HS256
+  JWT_EXPIRE_MINUTES=60
+
+Frontend Variables (no changes):
+  NEXT_PUBLIC_API_BASE_URL=https://sdd-hackathon-02-p2-backend.onrender.com
+
+CORS Configuration (already set):
+  CORS_ORIGINS=http://localhost:3000,https://sdd-hackathon-02-p1.vercel.app
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 🎉 DONE!                                                         │
+└──────────────────────────────────────────────────────────────────┘
+
+Total Time: ~5 minutes
+Difficulty: Easy
+
+Your production app is now live with full authentication! 🚀

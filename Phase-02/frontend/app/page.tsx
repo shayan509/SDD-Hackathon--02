@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 import TodoHeader from '@/src/components/TodoHeader';
 import TodoInput from '@/src/components/TodoInput';
 import TodoList from '@/src/components/TodoList';
-import { fetchTodos, createTodo } from '@/src/lib/api';
+import { fetchTodos } from '@/src/lib/api';
+import { clearToken, isAuthenticated } from '@/src/lib/auth';
 
 type Todo = {
   id: number;
@@ -15,23 +18,26 @@ type Todo = {
 };
 
 export default function Home() {
+  const router = useRouter();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isAuthenticated()) {
+      router.replace('/login');
+      return;
+    }
     loadTodos();
-  }, []);
+  }, [router]);
 
   const loadTodos = async () => {
     try {
       setIsLoading(true);
-      setError(null);
       const data = await fetchTodos();
       setTodos(data);
     } catch (error) {
       console.error('Error loading todos:', error);
-      setError('Failed to load todos. Please refresh the page.');
+      toast.error('Failed to load todos. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -39,10 +45,17 @@ export default function Home() {
 
   const handleAddTodo = async (newTodo: Todo) => {
     setTodos(prevTodos => [...prevTodos, newTodo]);
+    toast.success('Todo added successfully!');
   };
 
   const handleUpdateTodos = (updatedTodos: Todo[]) => {
     setTodos(updatedTodos);
+  };
+
+  const handleLogout = () => {
+    clearToken();
+    toast.info('Logged out successfully');
+    router.replace('/login');
   };
 
   const completedCount = todos.filter(todo => todo.is_done).length;
@@ -51,19 +64,14 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <TodoHeader 
-          title="Public Wall" 
+          title="My Todo Wall" 
           todoCount={todos.length}
           completedCount={completedCount}
+          onLogout={handleLogout}
         />
         
         <div className="bg-zinc-900/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-zinc-800 p-6">
           <TodoInput onAddTodo={handleAddTodo} />
-          
-          {error && (
-            <div className="mb-4 p-4 bg-red-900/50 border border-red-700 rounded-lg text-red-200">
-              {error}
-            </div>
-          )}
           
           {isLoading ? (
             <div className="text-center py-12">

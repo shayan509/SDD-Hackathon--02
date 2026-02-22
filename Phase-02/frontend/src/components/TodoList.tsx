@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import { toggleTodoStatus, deleteTodo } from '../lib/api';
 
 interface Todo {
@@ -25,25 +26,23 @@ const TodoList: React.FC<TodoListProps> = ({ todos, onUpdateTodos }) => {
         todo.id === id ? { ...todo, is_done: !todo.is_done } : todo
       );
       onUpdateTodos(updatedTodos);
+      toast.success(currentStatus ? 'Todo marked as incomplete' : 'Todo completed!');
     } catch (error) {
       console.error('Error toggling todo:', error);
-      alert('Failed to update todo status');
+      toast.error('Failed to update todo status');
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this todo?')) {
-      return;
-    }
-
     try {
       setDeletingId(id);
       await deleteTodo(id);
       const updatedTodos = todos.filter(todo => todo.id !== id);
       onUpdateTodos(updatedTodos);
+      toast.success('Todo deleted successfully');
     } catch (error) {
       console.error('Error deleting todo:', error);
-      alert('Failed to delete todo');
+      toast.error('Failed to delete todo');
     } finally {
       setDeletingId(null);
     }

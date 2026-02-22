@@ -1,33 +1,61 @@
-from sqlmodel import select
-from models.model import Todo
-from config.database_connection import get_session
+from uuid import UUID
+from datetime import datetime, timezone
 
-def get_all_todos(session):
-    return session.exec(select(Todo)).all()
+from fastapi import HTTPException
+from sqlmodel import Session, select
 
-def get_todo(session, todo_id):
-    return session.get(Todo, todo_id)
+from models.todo import TodoCreate, TodoItem, TodoUpdate
 
-def create_todo(session, todo: Todo):
+
+def get_all_todos_for_user(session: Session, user_id: UUID) -> list[TodoItem]:
+    return session.exec(select(TodoItem).where(TodoItem.user_id == user_id)).all()
+
+
+def create_todo_for_user(session: Session, payload: TodoCreate, user_id: UUID) -> TodoItem:
+    task = payload.task.strip()
+    if not task:
+        raise HTTPException(status_code=400, detail="Task cannot be empty")
+
+    todo = TodoItem(
+        task=task,
+        description=payload.description.strip() if payload.description else "",
+        is_done=False,
+        user_id=user_id,
+    )
     session.add(todo)
     session.commit()
     session.refresh(todo)
     return todo
 
-def delete_todo(session, todo_id):
-    todo = session.get(Todo, todo_id)
+
+def update_todo_for_user(
+    session: Session,
+    todo_id: int,
+    payload: TodoUpdate,
+    user_id: UUID,
+) -> TodoItem:
+    todo = session.get(TodoItem, todo_id)
     if not todo:
-        raise ValueError(f"Todo with id {todo_id} not found")
+        raise HTTPException(status_code=404, detail="Todo not found")
+    if todo.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    if payload.is_done is not None:
+        todo.is_done = payload.is_done
+    todo.updated_at = datetime.now(timezone.utc)
+
+    session.add(todo)
+    session.commit()
+    session.refresh(todo)
+    return todo
+
+
+def delete_todo_for_user(session: Session, todo_id: int, user_id: UUID) -> None:
+    todo = session.get(TodoItem, todo_id)
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    if todo.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
     session.delete(todo)
     session.commit()
-    return todo  # Return the todo before it gets deleted from session cache
-
-def update_todo(session,todo_id,data):
-    todo = session.get(Todo,todo_id)
-    for key,value in data.items():
-        setattr(todo,key,value)
-    session.add(todo)
-    session.commit()
-    session.refresh(todo)
-    return todo
-    
